@@ -1,0 +1,41 @@
+// // This is a simple Node.js script
+// console.log("Hello, Node.js!");
+//this allows us to work witht he file
+const fs = require('fs');
+
+//Creating the jasondata
+const MenuData = {
+    menu: [
+    {
+    item: 'Burger',
+    price: 10.99,
+    quantity: 50,
+    },
+    {
+    item: 'Pizza',
+    price: 12.99,
+    quantity: 30,
+    },
+    {
+    item: 'Salad',
+    price: 7.99,
+    quantity: 20,
+    },
+]
+};
+
+//converting object to json formated string
+const jsonString = JSON.stringify(MenuData, null, 2);
+
+//defining file path to json file
+const filePath = 'data.json';
+
+//now we will write the json data to the file
+fs.writeFile(filePath, jsonString, (err) => {
+    if (err) {
+        console.error('Error writing JSON file:', err);
+    }
+    else { 
+        console.log('JSON file has been created successfully!')
+    }
+});
