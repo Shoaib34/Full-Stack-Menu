@@ -1,41 +1,60 @@
-// // This is a simple Node.js script
-// console.log("Hello, Node.js!");
-//this allows us to work witht he file
 const fs = require('fs');
 
-//Creating the jasondata
-const MenuData = {
-    menu: [
-    {
-    item: 'Burger',
-    price: 10.99,
-    quantity: 50,
-    },
-    {
-    item: 'Pizza',
-    price: 12.99,
-    quantity: 30,
-    },
-    {
-    item: 'Salad',
-    price: 7.99,
-    quantity: 20,
-    },
-]
-};
-
-//converting object to json formated string
-const jsonString = JSON.stringify(MenuData, null, 2);
-
-//defining file path to json file
+// Define the path to the JSON file
 const filePath = 'data.json';
 
-//now we will write the json data to the file
+// Read the existing JSON data from the file (if it exists)
+let existingMenuData = [];
+try {
+  const existingData = fs.readFileSync(filePath, 'utf8');
+  // Turing the existing json string into a javascript string and creating the key menu
+  existingMenuData = JSON.parse(existingData).menu;
+} catch (err) {
+  // Handle the case where the file does not exist or is invalid JSON
+}
+
+// Define new menu items
+const newMenuItems = [
+    {
+    "item": "Burger",
+    "price": 10.99,
+    "quantity": 50
+    },
+    {
+    "item": "Pizza",
+    "price": 12.99,
+    "quantity": 30
+    },
+    {
+    "item": "Salad",
+    "price": 7.99,
+    "quantity": 20
+    },
+];
+
+// Check if each new item exists in the existing menu data
+newMenuItems.forEach((newItem) => {
+  const exists = existingMenuData.some((item) => item.item === newItem.item);
+
+  if (!exists) {
+    // Add the new item if it doesn't exist
+    existingMenuData.push(newItem);
+  }
+});
+
+// Create the MenuData object
+const MenuData = {
+  menu: existingMenuData,
+};
+
+// Convert the MenuData object to a JSON-formatted string
+const jsonString = JSON.stringify(MenuData, null, 2);
+
+// Write the updated JSON data back to the file
 fs.writeFile(filePath, jsonString, (err) => {
-    if (err) {
-        console.error('Error writing JSON file:', err);
-    }
-    else { 
-        console.log('JSON file has been created successfully!')
-    }
+  if (err) {
+    console.error('Error writing JSON file:', err);
+  } else {
+    console.log('JSON file has been updated successfully!');
+  }
 });
