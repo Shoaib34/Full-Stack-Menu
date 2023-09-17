@@ -6,6 +6,7 @@ const filePath = 'data.json';
 // Read the existing JSON data from the file (if it exists)
 let existingMenuData = [];
 try {
+  // This allows us to read the json file 
   const existingData = fs.readFileSync(filePath, 'utf8');
   // Turing the existing json string into a javascript string and creating the key menu
   existingMenuData = JSON.parse(existingData).menu;
@@ -33,6 +34,8 @@ const newMenuItems = [
 ];
 
 // Check if each new item exists in the existing menu data
+// Looping using foreach to cycle through the list if we hace a previous item
+// in our new list we say it exist else we push it in
 newMenuItems.forEach((newItem) => {
   const exists = existingMenuData.some((item) => item.item === newItem.item);
 
