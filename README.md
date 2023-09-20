@@ -1,0 +1,1 @@
+This project is going to be a website which allows users to interact with the front end. The front end of the project will be a food menu screen which allows users to choose what food they want, the price, quantities and the total amount# versioncontrol4900
