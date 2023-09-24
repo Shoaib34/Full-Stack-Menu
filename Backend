@@ -1,63 +1,46 @@
-const fs = require('fs');
 
-// Define the path to the JSON file
-const filePath = 'data.json';
 
-// Read the existing JSON data from the file (if it exists)
-let existingMenuData = [];
-try {
-  // This allows us to read the json file 
-  const existingData = fs.readFileSync(filePath, 'utf8');
-  // Turing the existing json string into a javascript string and creating the key menu
-  existingMenuData = JSON.parse(existingData).menu;
-} catch (err) {
-  // Handle the case where the file does not exist or is invalid JSON
-}
+const MongoClient = require('mongodb').MongoClient;
 
-// Define new menu items
-const newMenuItems = [
-    {
-    "item": "Burger",
-    "price": 10.99,
-    "quantity": 50
-    },
-    {
-    "item": "Pizza",
-    "price": 12.99,
-    "quantity": 30
-    },
-    {
-    "item": "Salad",
-    "price": 7.99,
-    "quantity": 20
-    },
-];
-
-// Check if each new item exists in the existing menu data
-// Looping using foreach to cycle through the list if we hace a previous item
-// in our new list we say it exist else we push it in
-newMenuItems.forEach((newItem) => {
-  const exists = existingMenuData.some((item) => item.item === newItem.item);
-
-  if (!exists) {
-    // Add the new item if it doesn't exist
-    existingMenuData.push(newItem);
-  }
-});
-
-// Create the MenuData object
-const MenuData = {
-  menu: existingMenuData,
-};
-
-// Convert the MenuData object to a JSON-formatted string
-const jsonString = JSON.stringify(MenuData, null, 2);
-
-// Write the updated JSON data back to the file
-fs.writeFile(filePath, jsonString, (err) => {
+// Read the content of the JSON file
+fs.readFile(filePath, 'utf8', (err, jsonData) => {
   if (err) {
-    console.error('Error writing JSON file:', err);
-  } else {
-    console.log('JSON file has been updated successfully!');
+    console.error('Error reading JSON file:', err);
+    return;
   }
+
+  // Parse the JSON data
+  const menuData = JSON.parse(jsonData);
+
+  // Define the MongoDB connection URL and database name
+  const mongoUrl = 'mongodb://localhost:27017'; // Update with your MongoDB URL
+  const dbName = 'yourdbname'; // Replace with your desired database name
+
+  // Connect to MongoDB
+  MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+    if (err) {
+      console.error('Error connecting to MongoDB:', err);
+      return;
+    }
+
+    console.log('Connected to MongoDB');
+
+    // Get a reference to the database
+    const db = client.db(dbName);
+
+    // Define the collection where you want to insert the data
+    const collectionName = 'menu'; // Replace with your desired collection name
+
+    // Insert the data into the MongoDB collection
+    db.collection(collectionName).insertOne(menuData, (err, result) => {
+      if (err) {
+        console.error('Error inserting data into MongoDB:', err);
+      } else {
+        console.log('Data inserted into MongoDB successfully!');
+      }
+
+      // Close the MongoDB connection
+      client.close();
+    });
+  });
 });
