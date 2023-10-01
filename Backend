@@ -101,9 +101,9 @@ fs.writeFile(filePath, jsonString, (err) => {
 });
 
 // Define the MongoDB connection URL and database name
-const mongoUrl = 'mongodb://localhost:27017/Food_data';
+const mongoUrl = 'mongodb://localhost:27017/';
 // Connect to MongoDB
-MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+MongoClient.connect(mongoUrl, (err, client) => {
   if (err) {
     console.error('Error connecting to MongoDB:', err);
     return;
@@ -115,7 +115,7 @@ MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true 
   const db = client.db();
 
   // Define the collection where you want to insert the data
-  const collectionName = 'data'; // Replace with your desired collection name
+  const collectionName = 'food'; // Replace with your desired collection name
 
   // Insert the data into the MongoDB collection
   db.collection(collectionName).insertOne(menuData, (err, result) => {
