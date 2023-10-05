@@ -1,0 +1,30 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Home from './Home'; // Import your Home component
+import Menu from './Menu'; // Import your Menu component
+
+function App() {
+  return (
+    // Set up the Router for routing
+    <Router>
+      <div>
+        {/* This div contains the common layout or header for your app */}
+        
+        {/* Switch allows us to render only one route at a time */}
+        <Switch>
+          {/* Define your routes here */}
+          
+          {/* The exact keyword ensures an exact match for the root URL */}
+          <Route path="/" exact component={WelcomeTitle} />
+          {/* This route matches the "/menu" URL */}
+          <Route path="/menu" component={Menu} />
+          {/* Add more routes as needed for other pages */}
+          
+        </Switch>
+      </div>
+    </Router>
+  );
+}
+
+// Export the App component for use in your application
+export default App;
