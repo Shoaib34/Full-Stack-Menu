@@ -1,0 +1,12 @@
+import React from 'react';
+
+function WelcomeTitle() {
+  return (
+    <div>
+      <h1>Welcome to My Dinner</h1>
+      <p>Enjoy the delicious meals and great company!</p>
+    </div>
+  );
+}
+
+export default WelcomeTitle;
