@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import WelcomeTitle from './WelcomeTitle';
-
+import Menu from './Menu';
 
 function App() {
   return (
@@ -9,6 +9,8 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <WelcomeTitle /> {/* Use the WelcomeText component */}
+        <p>Click the link below to see the menu:</p>
+        <a href="/Menu">Go to men </a>
         <p>Edit <code>src/App.js</code> and save to reload.</p>
         <a
           className="App-link"
