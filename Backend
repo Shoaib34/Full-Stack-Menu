@@ -1,131 +1,34 @@
-const fs = require('fs');
-const MongoClient = require('mongodb').MongoClient;
-
-// Define the path to the JSON file
-const filePath = 'menu.json';
-
-// Define new menu items
-const newMenuItems = [
-  {
-    "menu": [
-      {
-        "item": "Chicken Burger",
-        "price": 10.99,
-        "quantity": 1
-      },
-      {
-        "item": "Pizza",
-        "price": 12.99,
-        "quantity": 1
-      },
-      {
-        "item": "Salad",
-        "price": 7.99,
-        "quantity": 1
-      },
-      {
-        "item": "10 Pc Chicken",
-        "price": 14.99,
-        "quantity": 1
-      },
-      {
-        "item": "Fish",
-        "price": 16.99,
-        "quantity": 1
-      },
-      {
-        "item": "Steak",
-        "price": 25.99,
-        "quantity": 1
-      },
-      {
-        "item": "Beef Burger",
-        "price": 10.99,
-        "quantity": 1
-      },
-      {
-        "item": "3 Pc Kebab/Rice",
-        "price": 14.99,
-        "quantity": 1
-      },
-      {
-        "item": "Chicken On Rice",
-        "price": 7.99,
-        "quantity": 1
-      },
-      {
-        "item": "Lamb On Rice",
-        "price": 7.99,
-        "quantity": 1
-      }
-    ]
-  }
-  // Add more new menu items here
-];
-
-// Read the existing JSON menu from the file (if it exists)
-let existingMenuData = [];
-try {
-  // Reads the json file to existingData
-  // Parse the data into a javascript object
-  const existingData = fs.readFileSync(filePath, 'utf8');
-  existingMenuData = JSON.parse(existingData).menu;
-} catch (err) {
-  console.error('Error reading JSON file:', err);
-}
-
-// Update existing menu data with new items
-newMenuItems.forEach((newItem) => {
-  const exists = existingMenuData.some((item) => item.item === newItem.item);
-
-  if (!exists) {
-    existingMenuData.push(newItem);
-  }
-});
-
-// Create the MenuData object 
-const menuData = {
-  menu: existingMenuData,
-};
-
-// Convert the MenuData object to a JSON-formatted string
-const jsonString = JSON.stringify(menuData, null, 2);
-
-// Write the updated JSON menu back to the file
-fs.writeFile(filePath, jsonString, (err) => {
-  if (err) {
-    console.error('Error writing JSON file:', err);
-  } else {
-    console.log('JSON file has been updated successfully!');
-  }
-});
+const { MongoClient } = require('mongodb');
 
 // Define the MongoDB connection URL and database name
-const mongoUrl = 'mongodb://localhost:27017/';
-// Connect to MongoDB
-MongoClient.connect(mongoUrl, (err, client) => {
-  if (err) {
-    console.error('Error connecting to MongoDB:', err);
-    return;
+const url = 'mongodb://127.0.0.1:27017/food';
+
+// Create a new MongoDB client
+const client = new MongoClient(url);
+
+// Main asynchronous function to handle MongoDB operations
+async function main() {
+  try {
+    // Connect to the MongoDB server
+    await client.connect();
+    console.log('Connected to MongoDB');
+
+    // Specify the database and collection
+    const db = client.db('food');
+    const collection = db.collection('menu');
+
+    // Find all documents in the collection and convert them to an array
+    const menuItems = await collection.find({}).toArray();
+
+    // Display the retrieved menu items
+    menuItems.forEach((item) => {
+      console.log(item);
+    });
+  } finally {
+    // Close the MongoDB client when done
+    await client.close();
   }
+}
 
-  console.log('Connected to MongoDB');
-
-  // Get a reference to the database
-  const db = client.db();
-
-  // Define the collection where you want to insert the data
-  const collectionName = 'food'; // Replace with your desired collection name
-
-  // Insert the data into the MongoDB collection
-  db.collection(collectionName).insertOne(menuData, (err, result) => {
-    if (err) {
-      console.error('Error inserting data into MongoDB:', err);
-    } else {
-      console.log('Data inserted into MongoDB successfully!');
-    }
-
-    // Close the MongoDB connection
-    client.close();
-  });
-});
+// Call the main function and handle errors
+main().catch(console.error);
