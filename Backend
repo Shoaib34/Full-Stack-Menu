@@ -1,4 +1,6 @@
-const { MongoClient } = require('mongodb');
+// Import necessary modules
+const { MongoClient } = require('mongodb'); // MongoDB driver
+const fs = require('fs'); // File System module
 
 // Define the MongoDB connection URL and database name
 const url = 'mongodb://127.0.0.1:27017/food';
@@ -13,17 +15,32 @@ async function main() {
     await client.connect();
     console.log('Connected to MongoDB');
 
-    // Specify the database and collection
-    const db = client.db('food');
-    const collection = db.collection('menu');
+    // Select the "menu" collection
+    const collection = client.db('food').collection('menu');
 
-    // Find all documents in the collection and convert them to an array
-    const menuItems = await collection.find({}).toArray();
+    // Define the path to the JSON file
+    const filePath = 'menu.json';
 
-    // Display the retrieved menu items
-    menuItems.forEach((item) => {
-      console.log(item);
-    });
+    // Read the existing JSON menu from the file
+    const existingData = fs.readFileSync(filePath, 'utf8');
+
+    // Parse the existing JSON data into a JavaScript object and extract the "menu" array
+    const newMenuItems = JSON.parse(existingData).menu || [];
+
+    // Iterate through the new menu items and insert them if they don't already exist
+    for (const newItem of newMenuItems) {
+      // Check if a menu item with the same name already exists
+      const exists = await collection.findOne({ item: newItem.item });
+
+      if (!exists) {
+        // If it doesn't exist, insert the new menu item into the collection
+        await collection.insertOne(newItem);
+        console.log(`Inserted menu item: ${newItem.item}`);
+      } else {
+        // If it already exists, log that it's already in the collection
+        console.log(`Menu item already exists: ${newItem.item}`);
+      }
+    }
   } finally {
     // Close the MongoDB client when done
     await client.close();
