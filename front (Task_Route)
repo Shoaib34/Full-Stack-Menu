@@ -1,0 +1,21 @@
+// Import necessary modules and components
+import React from 'react'; // Import React library
+import Backapi from './components/Backapi'; // Import the Tasks component
+import './App.css'; // Import the CSS styles for the App component
+
+function App() {
+  // This is a functional React component named App.
+  return (
+    <div className="App">
+      {/* Create a container div with a CSS class "App" */}
+      <header className="App-header">
+        {/* Create a header with a CSS class "App-header" */}
+        <Backapi />
+        {/* Render the Backapi component, which fetches and displays tasks */}
+      </header>
+    </div>
+  );
+}
+
+export default App;
+// Export the App component to be used in other parts of the application
