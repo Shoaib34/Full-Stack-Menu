@@ -1,0 +1,18 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import WelcomeTitle from './WelcomeTitle';
+import Menu from './Menu';
+
+function App() {
+  return (
+    <Router>
+      <Switch>
+        <Route exact path="/" component={WelcomeTitle} />
+        <Route path="/menu" component={Menu} />
+        {/* Add more routes as needed */}
+      </Switch>
+    </Router>
+  );
+}
+
+export default App;
