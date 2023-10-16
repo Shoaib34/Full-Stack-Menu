@@ -1,27 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
-import WelcomeTitle from './WelcomeTitle';
-import Menu from './Menu';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import WelcomeTitle from './WelcomeTitle'; // Import the WelcomeTitle component
+import Menu from './Menu'; // Import the Menu component
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <WelcomeTitle /> {/* Use the WelcomeText component */}
-        <p>Click the link below to see the menu:</p>
-        <a href="/Menu">Go to men </a>
-        <p>Edit <code>src/App.js</code> and save to reload.</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Switch>
+          <Route exact path="/" component={WelcomeTitle} />
+          <Route path="/menu" component={Menu} />
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
