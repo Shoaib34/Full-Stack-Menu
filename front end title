@@ -1,12 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function WelcomeTitle() {
-  return (
-    <div>
-      <h1>Welcome to My Dinner</h1>
-      <p>Enjoy the delicious meals and great company!</p>
-    </div>
-  );
-}
-
+    return (
+      <div>
+        <h1>Welcome to The HALAL Wacky Dinner</h1>
+        <p>Enjoy the delicious meals and great company!</p>
+        <p>Click the link below to see the menu:</p>
+        <Link to="/menu">Menu</Link>
+      </div>
+    );
+  }
 export default WelcomeTitle;
