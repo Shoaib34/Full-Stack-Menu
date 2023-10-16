@@ -10,7 +10,7 @@ function Tasks() {
   // Use the 'useEffect' hook to fetch data from the backend when the component mounts
   useEffect(() => {
     // Make a GET request to your backend API. Replace 'your-backend-url' with your actual backend URL.
-    axios.get('add my backend-url/api/tasks')
+    axios.get('http://localhost:5000/api/tasks')
       .then((response) => {
         // Set the 'tasks' state variable with the data received from the backend
         setTasks(response.data);
