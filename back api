@@ -1,45 +1,37 @@
-// server.js
+import React, { useEffect, useState } from 'react';
+import axios from 'axios'; // Axios for making HTTP requests
 
-// Import required packages
-const express = require('express'); // Express.js for the web server
-const mongoose = require('mongoose'); // Mongoose for MongoDB connection
-const cors = require('cors'); // CORS handling middleware
+function Tasks() {
+  // Define a state variable 'tasks' and a function 'setTasks' to update it
+  // Task is a reusable building block for the interface
+  const [tasks, setTasks] = useState([]);
+  // State lets you change the way to store and manage data
 
-// Create an Express application
-const app = express();
+  // Use the 'useEffect' hook to fetch data from the backend when the component mounts
+  useEffect(() => {
+    // Make a GET request to your backend API. Replace 'your-backend-url' with your actual backend URL.
+    axios.get('http://localhost:5000/api/tasks')
+      .then((response) => {
+        // Set the 'tasks' state variable with the data received from the backend
+        setTasks(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching tasks:', error);
+      });
+  }, []); // The empty dependency array ensures the effect runs once when the component mounts
 
-// Define the port the server will listen on (default to 5000 if not provided through an environment variable)
-const port = process.env.PORT || 5000;
+  return (
+    <div>
+      <h2>Tasks</h2>
+      <ul>
+        {/* Map through the 'tasks' array and render a list item for each task */}
+        {tasks.map((task) => (
+          // Use 'task._id' as the key to uniquely identify each list item
+          <li key={task._id}>{task.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-// Connect to your MongoDB database. You should replace 'your-mongodb-connection-string' with your actual MongoDB connection string.
-mongoose.connect('mongodb://127.0.0.1:27017/food', {
-  useNewUrlParser: true, // Use the new URL parser
-  useUnifiedTopology: true, // Use the new Server Discovery and Monitoring engine
-});
-
-// Create a basic model and schema for the "Task" collection in MongoDB
-const Task = mongoose.model('Task', {
-    id: Integer,
-    item: String,
-    description: String,
-    price: Double,
-});
-
-// Enable CORS (Cross-Origin Resource Sharing) to allow requests from other domains
-app.use(cors());
-
-// Parse JSON data in incoming requests
-app.use(express.json());
-
-// Define your API routes (e.g., an endpoint to get a list of tasks)
-app.get('/api/tasks', async (req, res) => {
-  // Fetch all tasks from the MongoDB database
-  const tasks = await Task.find();
-  // Respond with the tasks as a JSON array
-  res.json(tasks);
-});
-
-// Start the server and listen on the specified port
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+export default Tasks;
