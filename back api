@@ -1,37 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios'; // Axios for making HTTP requests
+// Import required packages
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
-function Tasks() {
-  // Define a state variable 'tasks' and a function 'setTasks' to update it
-  // Task is a reusable building block for the interface
-  const [tasks, setTasks] = useState([]);
-  // State lets you change the way to store and manage data
+// Create an Express application
+const app = express();
 
-  // Use the 'useEffect' hook to fetch data from the backend when the component mounts
-  useEffect(() => {
-    // Make a GET request to your backend API. Replace 'your-backend-url' with your actual backend URL.
-    axios.get('http://localhost:5000/api/tasks')
-      .then((response) => {
-        // Set the 'tasks' state variable with the data received from the backend
-        setTasks(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching tasks:', error);
-      });
-  }, []); // The empty dependency array ensures the effect runs once when the component mounts
+// Define the port the server will listen on
+const port = process.env.PORT || 3000;
 
-  return (
-    <div>
-      <h2>Tasks</h2>
-      <ul>
-        {/* Map through the 'tasks' array and render a list item for each task */}
-        {tasks.map((task) => (
-          // Use 'task._id' as the key to uniquely identify each list item
-          <li key={task._id}>{task.title}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+mongoose.connect('mongodb://127.0.0.1:27017/food', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('MongoDB connected successfully');
+})
+.catch((error) => {
+  console.error('MongoDB connection error:', error);
+});
 
-export default Tasks;
+// Add MongoDB connection event listeners
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
+
+mongoose.connection.on('error', (error) => {
+  console.error('MongoDB connection error:', error);
+});
+
+// Create a basic model and schema for the "food" collection in MongoDB
+const menuSchema = new mongoose.Schema({
+  item: String,
+  description: String,
+  price: Number,
+});
+
+const Menu = mongoose.model('menu', menuSchema);
+
+// ... (the rest of your code)
