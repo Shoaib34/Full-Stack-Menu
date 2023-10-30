@@ -13,21 +13,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/food', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => {
-  console.log('MongoDB connected successfully');
-})
-.catch((error) => {
-  console.error('MongoDB connection error:', error);
-});
-
-// Add MongoDB connection event listeners
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB disconnected');
-});
-
-mongoose.connection.on('error', (error) => {
-  console.error('MongoDB connection error:', error);
-});
+  .then(() => {
+    console.log('MongoDB connected successfully');
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+  });
 
 // Create a basic model and schema for the "food" collection in MongoDB
 const menuSchema = new mongoose.Schema({
@@ -36,6 +27,32 @@ const menuSchema = new mongoose.Schema({
   price: Number,
 });
 
-const Menu = mongoose.model('menu', menuSchema);
+// Create a new MongoDB client
+//const client = new MongoClient(url);
 
-// ... (the rest of your code)
+const Menu = mongoose.model('menu', menuSchema);
+//const Menu = mongoose.model.db('food').collection('menu');
+
+// Enable CORS (Cross-Origin Resource Sharing) to allow requests from other domains
+app.use(cors());
+
+// Parse JSON data in incoming requests
+app.use(express.json());
+
+// Define your API routes (e.g., an endpoint to get a list of menu items)
+
+app.get('/api/menu', (req, res) => {
+  const hardcodedData = [
+    { id: 1, item: 'Burger', description: 'A delicious burger', price: 10.99 }, { id: 2, item: 'Pcikles', description: 'A delicious pcikles', price: 11.99 }
+    // Add more hardcoded data as needed
+  ];
+  res.json(hardcodedData);
+  console.log(hardcodedData)
+});
+
+
+
+// Start the server and listen on the specified port
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
