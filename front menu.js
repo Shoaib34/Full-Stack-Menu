@@ -1,51 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './Menu.css';
+import './Menu.css'; // Import the CSS file for styling
 
 function Menu() {
-  const [menuItems, setMenuItems] = useState([]); // State to store menu items
-  const [cartItems, setCartItems] = useState([]); // State to store cart items
+  const [menuItems, setMenuItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
 
-  // Function to handle adding an item to the cart
   const handleItemClick = (menuItem) => {
-    const existingCartItem = cartItems.find((item) => item._id === menuItem._id);
+    const itemIndex = selectedItems.findIndex((item) => item._id === menuItem._id);
 
-    if (existingCartItem) {
-      // If the item is already in the cart, increase its quantity by 1
-      const updatedCart = cartItems.map((item) =>
-        item._id === menuItem._id ? { ...item, quantity: item.quantity + 1 } : item
-      );
-      setCartItems(updatedCart);
+    if (itemIndex !== -1) {
+      const updatedSelectedItems = [...selectedItems];
+      updatedSelectedItems[itemIndex] = {
+        ...selectedItems[itemIndex],
+        quantity: selectedItems[itemIndex].quantity + 1,
+      };
+      setSelectedItems(updatedSelectedItems);
     } else {
-      // If it's a new item, add it to the cart with a quantity of 1
-      setCartItems([...cartItems, { ...menuItem, quantity: 1 }]);
+      setSelectedItems([...selectedItems, { ...menuItem, quantity: 1 }]);
     }
-
     console.log(`Added ${menuItem.item} to cart.`);
   };
 
-  // Function to increase the quantity of an item in the cart
-  const increaseQuantity = (menuItem) => {
-    const updatedCart = cartItems.map((item) =>
-      item._id === menuItem._id ? { ...item, quantity: item.quantity + 1 } : item
+  const increaseQuantity = (selectedItem) => {
+    const updatedSelectedItems = selectedItems.map((item) =>
+      item._id === selectedItem._id ? { ...item, quantity: item.quantity + 1 } : item
     );
-    setCartItems(updatedCart);
+    setSelectedItems(updatedSelectedItems);
   };
 
-  // Function to decrease the quantity of an item in the cart
-  const decreaseQuantity = (menuItem) => {
-    const updatedCart = cartItems.map((item) =>
-      item._id === menuItem._id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
+  const decreaseQuantity = (selectedItem) => {
+    const updatedSelectedItems = selectedItems.map((item) =>
+      item._id === selectedItem._id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
     );
-    setCartItems(updatedCart);
+    setSelectedItems(updatedSelectedItems);
   };
 
-  // Fetch menu items from the backend API when the component mounts
+  const addToCart = () => {
+    console.log('Selected Items:', selectedItems);
+  };
+
   useEffect(() => {
-    axios.get('http://localhost:3000/api/menu') // Fetch menu items from the API
+    axios.get('http://localhost:3000/api/menu')
       .then((response) => {
-        // Store the retrieved menu items in state
-        setMenuItems(response.data);
+        setMenuItems(response.data.map((item) => ({ ...item, quantity: 0 })));
       })
       .catch((error) => {
         console.error('Error fetching menu items:', error);
@@ -61,7 +59,7 @@ function Menu() {
             <p>{menuItem.item}</p>
             <p>{menuItem.description}</p>
             <p>${menuItem.price}</p>
-            <p>Quantity: {menuItem.quantity}</p> {/* Display the quantity of the item */}
+            <p>Quantity: {menuItem.quantity}</p>
             <div className="button-group">
               <button onClick={() => handleItemClick(menuItem)}>Add to Cart</button>
               <button onClick={() => increaseQuantity(menuItem)}>+</button>
@@ -70,6 +68,11 @@ function Menu() {
           </div>
         ))}
       </div>
+      {selectedItems.length > 0 && (
+        <button className="bottom-right-button" onClick={addToCart}>
+          Add Selected Items to Cart
+        </button>
+      )}
     </div>
   );
 }
