@@ -1,58 +1,81 @@
-// Import required packages
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-// Create an Express application
 const app = express();
-
-// Define the port the server will listen on
 const port = process.env.PORT || 3000;
 
 mongoose.connect('mongodb://127.0.0.1:27017/food', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-  .then(() => {
-    console.log('MongoDB connected successfully');
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-  });
+.then(() => {
+  console.log('MongoDB connected successfully');
+})
+.catch((error) => {
+  console.error('MongoDB connection error:', error);
+});
 
-// Create a basic model and schema for the "food" collection in MongoDB
+const orderSchema = new mongoose.Schema({
+  items: [
+    {
+      item: String,
+      description: String,
+      price: Number,
+      quantity: Number,
+    }
+  ],
+  totalPrice: Number,
+});
+
+const Order = mongoose.model('Order', orderSchema);
+
 const menuSchema = new mongoose.Schema({
   item: String,
   description: String,
   price: Number,
 });
 
-// Create a new MongoDB client
-//const client = new MongoClient(url);
+const Menu = mongoose.model('Menu', menuSchema);
 
-const Menu = mongoose.model('menu', menuSchema);
-//const Menu = mongoose.model.db('food').collection('menu');
-
-// Enable CORS (Cross-Origin Resource Sharing) to allow requests from other domains
 app.use(cors());
-
-// Parse JSON data in incoming requests
 app.use(express.json());
 
-// Define your API routes (e.g., an endpoint to get a list of menu items)
-
-app.get('/api/menu', (req, res) => {
-  const hardcodedData = [
-    { id: 1, item: 'Burger', description: 'A delicious burger', price: 10.99 }, { id: 2, item: 'Pcikles', description: 'A delicious pcikles', price: 11.99 }
-    // Add more hardcoded data as needed
-  ];
-  res.json(hardcodedData);
-  console.log(hardcodedData)
+app.get('/api/order', async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    res.json(orders);
+    console.log('Orders fetched from the database:', orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
+app.post('/api/order', async (req, res) => {
+  try {
+    const { items, totalPrice } = req.body;
+    const newOrder = new Order({ items, totalPrice });
+    await newOrder.save();
+    console.log('Order placed:', newOrder);
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.error('Error placing order:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
+app.get('/api/menu', async (req, res) => {
+  try {
+    const menuItems = await Menu.find({});
+    res.json(menuItems);
+    console.log('Menu items fetched from the database:', menuItems);
+  } catch (error) {
+    console.error('Error fetching menu items:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-// Start the server and listen on the specified port
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
