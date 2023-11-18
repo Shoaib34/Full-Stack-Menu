@@ -3,11 +3,12 @@ import axios from 'axios';
 import './Menu.css'; // Import the CSS file for styling
 
 function Menu() {
-  const [menuItems, setMenuItems] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+  // State for menu items and cart items
+  const [menuItems, setMenuItems] = useState([]); // State for menu items fetched from the backend
+  const [cartItems, setCartItems] = useState([]); // State for items added to the cart
 
+  // Function to increase quantity of a menu item
   const increaseQuantity = (menuItem) => {
-    // Increment quantity for the selected menu item in both menuItems and cartItems
     const updatedMenuItems = menuItems.map((item) =>
       item._id === menuItem._id ? { ...item, quantity: item.quantity + 1 } : item
     );
@@ -19,8 +20,8 @@ function Menu() {
     setCartItems(updatedCartItems);
   };
 
+  // Function to decrease quantity of a menu item
   const decreaseQuantity = (menuItem) => {
-    // Decrement quantity for the selected menu item in both menuItems and cartItems
     const updatedMenuItems = menuItems.map((item) =>
       item._id === menuItem._id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
     );
@@ -30,25 +31,13 @@ function Menu() {
       item._id === menuItem._id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
     );
     setCartItems(updatedCartItems);
-  };
-
-  const addToCart = () => {
-    console.log("Added items to cart:", cartItems);
-    // Send a POST request to the backend with the cartItems
-    axios.post('http://localhost:3000/api/order', { cartItems })
-      .then((response) => {
-        console.log("Cart items sent to the server:", response.data);
-        // Perform additional actions after successfully sending data
-      })
-      .catch((error) => {
-        console.error('Error sending cart items:', error);
-      });
   };
 
   // Fetch menu items from the backend when the component mounts
   useEffect(() => {
     axios.get('http://localhost:3000/api/menu')
       .then((response) => {
+        // Set the fetched menu items with initial quantity of 0
         setMenuItems(response.data.map((item) => ({ ...item, quantity: 0 })));
       })
       .catch((error) => {
@@ -56,11 +45,34 @@ function Menu() {
       });
   }, []);
 
+  // Function to add selected items to the cart
+  const addToCart = () => {
+    const selectedItems = cartItems.filter((item) => item.quantity > 0);
+
+    // Calculate total price based on selected items
+    const totalPrice = selectedItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+
+    axios.post('http://localhost:3000/api/order', {
+      items: selectedItems,
+      totalPrice: totalPrice,
+    })
+    .then((response) => {
+      console.log("Cart items sent to the server:", response.data);
+      // Additional actions after successfully sending data
+    })
+    .catch((error) => {
+      console.error('Error sending cart items:', error);
+    });
+  };
+
+  // Rendering the menu items and buttons to increase/decrease quantity
   return (
     <div>
       <h2>Menu</h2>
       <div className="menu-items-container">
-        {/* Display menu items with buttons to increase/decrease quantity */}
         {menuItems.map((menuItem) => (
           <div key={menuItem._id} className="menu-item">
             <p>{menuItem.item}</p>
