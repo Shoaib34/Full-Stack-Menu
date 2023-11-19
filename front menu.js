@@ -9,6 +9,7 @@ function Menu() {
 
   // Function to increase quantity of a menu item
   const increaseQuantity = (menuItem) => {
+    // Update quantity for the selected menu item in menuItems and cartItems
     const updatedMenuItems = menuItems.map((item) =>
       item._id === menuItem._id ? { ...item, quantity: item.quantity + 1 } : item
     );
@@ -22,6 +23,7 @@ function Menu() {
 
   // Function to decrease quantity of a menu item
   const decreaseQuantity = (menuItem) => {
+    // Decrement quantity for the selected menu item in menuItems and cartItems
     const updatedMenuItems = menuItems.map((item) =>
       item._id === menuItem._id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
     );
@@ -33,18 +35,6 @@ function Menu() {
     setCartItems(updatedCartItems);
   };
 
-   // Fetch menu items from the backend when the component mounts
-   useEffect(() => {
-    axios.get('http://localhost:3000/api/menu')
-      .then((response) => {
-        setMenuItems(response.data.map((item) => ({ ...item, quantity: 0 })));
-      })
-      .catch((error) => {
-        console.error('Error fetching menu items:', error);
-      });
-  }, []);
-
-  
   // Fetch menu items from the backend when the component mounts
   useEffect(() => {
     axios.get('http://localhost:3000/api/menu')
@@ -58,15 +48,20 @@ function Menu() {
   }, []);
 
   // Function to add selected items to the cart
-  const addToCart = () => {
-    const selectedItems = cartItems.filter((item) => item.quantity > 0);
+const addToCart = () => {
+  // Filter out items with quantity greater than 0 from cartItems
+  const selectedItems = menuItems.filter((item) => item.quantity > 0);
 
-    // Calculate total price based on selected items
-    const totalPrice = selectedItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
+  // Calculate total price based on selected items
+  const totalPrice = selectedItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
+  // Update cartItems state with selected items
+  setCartItems(selectedItems);
+
+    // Make a POST request to send selectedItems and totalPrice to the backend
     axios.post('http://localhost:3000/api/order', {
       items: selectedItems,
       totalPrice: totalPrice,
