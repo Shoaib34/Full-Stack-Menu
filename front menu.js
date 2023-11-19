@@ -33,6 +33,18 @@ function Menu() {
     setCartItems(updatedCartItems);
   };
 
+   // Fetch menu items from the backend when the component mounts
+   useEffect(() => {
+    axios.get('http://localhost:3000/api/menu')
+      .then((response) => {
+        setMenuItems(response.data.map((item) => ({ ...item, quantity: 0 })));
+      })
+      .catch((error) => {
+        console.error('Error fetching menu items:', error);
+      });
+  }, []);
+
+  
   // Fetch menu items from the backend when the component mounts
   useEffect(() => {
     axios.get('http://localhost:3000/api/menu')
