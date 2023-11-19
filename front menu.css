@@ -1,18 +1,54 @@
+.bottom-left-button {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  /* Other styling for your bottom-left button */
+}
+
 .menu-items-container {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  .menu-item {
-    border: 1px solid #ccc;
-    margin: 10px;
-    padding: 10px;
-    width: 200px;
-  }
-  
-  .button-group {
-    margin-top: 10px;
-    display: flex;
-    gap: 5px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* To center items horizontally */
+}
+
+.menu-items-wrapper {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to wrap to the next line */
+  gap: 10px; /* Add some space between items */
+}
+
+.menu-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 200px;
+  /* Other styling for your items */
+}
+
+
+/* This is for the checkout screen*/
+/* Define styles for the checkout details */
+
+/* Styles for the container holding all checkout items */
+.checkout-container {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+/* Styles for each individual checkout item */
+.checkout-item {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+}
+
+/* Remove bottom border from the last checkout item */
+.checkout-item:last-child {
+  border-bottom: none;
+}
+
+/* Additional styles for the total price */
+.total-price {
+  font-weight: bold;
+  margin-top: 10px;
+}
