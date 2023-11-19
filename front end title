@@ -1,14 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './WelcomeTitle.css'; // Import a CSS file for styling
 
 function WelcomeTitle() {
-    return (
-      <div>
-        <h1>Welcome to The HALAL Wacky Dinner</h1>
-        <p>Enjoy the delicious meals and great company!</p>
-        <p>Click the link below to see the menu:</p>
-        <Link to="/menu">Menu</Link>
-      </div>
-    );
-  }
+  return (
+    <div className="welcome-container">
+      <h1 className="title">Welcome to The HALAL Wacky Dinner</h1>
+      <p className="description">
+        Enjoy the delicious meals and great company!
+      </p>
+      <p className="instruction">
+        Click the link below to see the menu:
+      </p>
+      <Link className="menu-link" to="/Menus">
+        Menus
+      </Link>
+    </div>
+  );
+}
+
 export default WelcomeTitle;
