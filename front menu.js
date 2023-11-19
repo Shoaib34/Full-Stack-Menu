@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom'; // Import useHistory from react-router-dom
 import axios from 'axios';
 import './Menu.css'; // Import the CSS file for styling
 
 function Menu() {
+  const history = useHistory(); // Initialize useHistory hook to manage navigation
+
   // State for menu items and cart items
   const [menuItems, setMenuItems] = useState([]); // State for menu items fetched from the backend
   const [cartItems, setCartItems] = useState([]); // State for items added to the cart
@@ -48,31 +51,34 @@ function Menu() {
   }, []);
 
   // Function to add selected items to the cart
-const addToCart = () => {
-  // Filter out items with quantity greater than 0 from cartItems
-  const selectedItems = menuItems.filter((item) => item.quantity > 0);
+  const addToCart = () => {
+    // Filter out items with quantity greater than 0 from menuItems
+    const selectedItems = menuItems.filter((item) => item.quantity > 0);
 
-  // Calculate total price based on selected items
-  const totalPrice = selectedItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+    // Calculate total price based on selected items
+    const totalPrice = selectedItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
 
-  // Update cartItems state with selected items
-  setCartItems(selectedItems);
+    // Update cartItems state with selected items
+    setCartItems(selectedItems);
 
     // Make a POST request to send selectedItems and totalPrice to the backend
     axios.post('http://localhost:3000/api/order', {
       items: selectedItems,
       totalPrice: totalPrice,
     })
-    .then((response) => {
-      console.log("Cart items sent to the server:", response.data);
-      // Additional actions after successfully sending data
-    })
-    .catch((error) => {
-      console.error('Error sending cart items:', error);
-    });
+      .then((response) => {
+        console.log("Cart items sent to the server:", response.data);
+        // Additional actions after successfully sending data
+
+        // Redirect to the checkout page after adding items to the cart
+        history.push('/checkout'); // Change '/checkout' to your desired route
+      })
+      .catch((error) => {
+        console.error('Error sending cart items:', error);
+      });
   };
 
   // Rendering the menu items and buttons to increase/decrease quantity
@@ -80,6 +86,7 @@ const addToCart = () => {
     <div>
       <h2>Menu</h2>
       <div className="menu-items-container">
+        {/* Render menu items */}
         {menuItems.map((menuItem) => (
           <div key={menuItem._id} className="menu-item">
             <p>{menuItem.item}</p>
@@ -87,6 +94,7 @@ const addToCart = () => {
             <p>${menuItem.price}</p>
             <p>Quantity: {menuItem.quantity}</p>
             <div className="button-group">
+              {/* Buttons to increase/decrease quantity */}
               <button onClick={() => increaseQuantity(menuItem)}>+</button>
               <button onClick={() => decreaseQuantity(menuItem)}>-</button>
             </div>
