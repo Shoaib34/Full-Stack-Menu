@@ -60,7 +60,7 @@ function Menu() {
     const totalPrice = selectedItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0
-    );
+    ).toFixed(2);
     
     // Update cartItems state with selected items
     setCartItems(selectedItems);
@@ -93,35 +93,38 @@ function Menu() {
               <p>{item.item}</p>
               <p>{item.description}</p>
               <p>Quantity: {item.quantity}</p>
-              <p>Total Price: ${item.price * item.quantity}</p>
+              <p>Total Price: ${(item.price * item.quantity).toFixed(2)}</p>
             </div>
           ))}
           {/* Calculate total price for all items */}
-          <p>Total Price for all items: ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0)}</p>
+          <p>Total Price for all items: ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</p>
         </div>
       ) : (
         // Display menu items and add to cart button
-        <div>
+        <div className="menu-items-container">
           <h2>Menu</h2>
-          {menuItems.map((menuItem) => (
-            <div key={menuItem._id} className="menu-item">
-              <p>{menuItem.item}</p>
-              <p>{menuItem.description}</p>
-              <p>${menuItem.price}</p>
-              <p>Quantity: {menuItem.quantity}</p>
-              <div className="button-group">
-                <button onClick={() => increaseQuantity(menuItem)}>+</button>
-                <button onClick={() => decreaseQuantity(menuItem)}>-</button>
+          <div className="menu-items-wrapper">
+            {menuItems.map((menuItem) => (
+              <div key={menuItem._id} className="menu-item">
+                <p>{menuItem.item}</p>
+                <p>{menuItem.description}</p>
+                <p>${(menuItem.price).toFixed(2)}</p>
+                <p>Quantity: {menuItem.quantity}</p>
+                <div className="button-group">
+                  <button onClick={() => increaseQuantity(menuItem)}>+</button>
+                  <button onClick={() => decreaseQuantity(menuItem)}>-</button>
+                </div>
               </div>
-            </div>
-          ))}
-          <button className="bottom-right-button" onClick={addToCart}>
+            ))}
+          </div>
+          <button className="bottom-left-button" onClick={addToCart}>
             Add Selected Items to Cart
           </button>
         </div>
       )}
     </div>
   );
-}
+  
+}  
 
 export default Menu;
