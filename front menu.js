@@ -9,6 +9,7 @@ function Menu() {
   // State for menu items and cart items
   const [menuItems, setMenuItems] = useState([]); // State for menu items fetched from the backend
   const [cartItems, setCartItems] = useState([]); // State for items added to the cart
+  const [showCheckout, setShowCheckout] = useState(false); // State to control showing the checkout details
 
   // Function to increase quantity of a menu item
   const increaseQuantity = (menuItem) => {
@@ -54,13 +55,13 @@ function Menu() {
   const addToCart = () => {
     // Filter out items with quantity greater than 0 from menuItems
     const selectedItems = menuItems.filter((item) => item.quantity > 0);
-
+    
     // Calculate total price based on selected items
     const totalPrice = selectedItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
-
+    
     // Update cartItems state with selected items
     setCartItems(selectedItems);
 
@@ -69,42 +70,56 @@ function Menu() {
       items: selectedItems,
       totalPrice: totalPrice,
     })
-      .then((response) => {
-        console.log("Cart items sent to the server:", response.data);
-        // Additional actions after successfully sending data
+    .then((response) => {
+      console.log("Cart items sent to the server:", response.data);
+      // Additional actions after successfully sending data
 
-        // Redirect to the checkout page after adding items to the cart
-        history.push('/checkout'); // Change '/checkout' to your desired route
-      })
-      .catch((error) => {
-        console.error('Error sending cart items:', error);
-      });
+      // Show checkout details after successful submission
+      setShowCheckout(true);
+    })
+    .catch((error) => {
+      console.error('Error sending cart items:', error);
+    });
   };
 
-  // Rendering the menu items and buttons to increase/decrease quantity
   return (
     <div>
-      <h2>Menu</h2>
-      <div className="menu-items-container">
-        {/* Render menu items */}
-        {menuItems.map((menuItem) => (
-          <div key={menuItem._id} className="menu-item">
-            <p>{menuItem.item}</p>
-            <p>{menuItem.description}</p>
-            <p>${menuItem.price}</p>
-            <p>Quantity: {menuItem.quantity}</p>
-            <div className="button-group">
-              {/* Buttons to increase/decrease quantity */}
-              <button onClick={() => increaseQuantity(menuItem)}>+</button>
-              <button onClick={() => decreaseQuantity(menuItem)}>-</button>
+      {showCheckout ? (
+        // Display checkout details when showCheckout is true
+        <div>
+          <h2>Checkout</h2>
+          {cartItems.map((item) => (
+            <div key={item._id}>
+              <p>{item.item}</p>
+              <p>{item.description}</p>
+              <p>Quantity: {item.quantity}</p>
+              <p>Total Price: ${item.price * item.quantity}</p>
             </div>
-          </div>
-        ))}
-      </div>
-      {/* Button to add selected items to the cart */}
-      <button className="bottom-right-button" onClick={addToCart}>
-        Add Selected Items to Cart
-      </button>
+          ))}
+          {/* Calculate total price for all items */}
+          <p>Total Price for all items: ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0)}</p>
+        </div>
+      ) : (
+        // Display menu items and add to cart button
+        <div>
+          <h2>Menu</h2>
+          {menuItems.map((menuItem) => (
+            <div key={menuItem._id} className="menu-item">
+              <p>{menuItem.item}</p>
+              <p>{menuItem.description}</p>
+              <p>${menuItem.price}</p>
+              <p>Quantity: {menuItem.quantity}</p>
+              <div className="button-group">
+                <button onClick={() => increaseQuantity(menuItem)}>+</button>
+                <button onClick={() => decreaseQuantity(menuItem)}>-</button>
+              </div>
+            </div>
+          ))}
+          <button className="bottom-right-button" onClick={addToCart}>
+            Add Selected Items to Cart
+          </button>
+        </div>
+      )}
     </div>
   );
 }
